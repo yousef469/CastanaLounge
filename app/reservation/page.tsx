@@ -399,7 +399,7 @@ export default function ReservationPage() {
                 {language === 'ar' ? 'سجل الحجوزات' : 'Registration History'}
               </h3>
               {existingReservation ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="p-4 bg-[#0a0f1a] rounded-xl border border-[#d4af37]/20">
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-[#d4af37] font-mono text-sm">{existingReservation.id}</span>
@@ -411,7 +411,27 @@ export default function ReservationPage() {
                     </div>
                     <p className="text-white text-sm">{existingReservation.name}</p>
                     <p className="text-gray-400 text-xs">{existingReservation.date} • {existingReservation.time}</p>
+                    <p className="text-gray-400 text-xs mt-1">{language === 'ar' ? `الطاولة: ${existingReservation.tableNumber}` : `Table: ${existingReservation.tableNumber}`}</p>
                   </div>
+                  
+                  {/* QR Code for waiter to scan */}
+                  {!existingReservation.scanned && (
+                    <div className="p-4 bg-[#0a0f1a] rounded-xl border border-[#d4af37]/30 text-center">
+                      <p className="text-[#d4af37] text-sm font-medium mb-3">
+                        {language === 'ar' ? 'امسح QR Code للدخول' : 'Scan QR Code to Check In'}
+                      </p>
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(existingReservation.qrCode || '')}`}
+                        alt="Reservation QR"
+                        className="w-48 h-48 mx-auto rounded-lg"
+                      />
+                      <p className="text-gray-500 text-xs mt-2">
+                        {language === 'ar' 
+                          ? 'أظهر هذا الرمز للنادل للتحقق من دخولك' 
+                          : 'Show this code to the waiter to verify your entry'}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-gray-400 text-center py-8">
