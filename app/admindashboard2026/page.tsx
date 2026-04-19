@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Lock, Eye, EyeOff, Users, Clock, Calendar, User, Users2, QrCode, AlertTriangle, CheckCircle, XCircle, Trash2, RefreshCw, BarChart3, TrendingUp, Globe } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const ADMIN_PASSWORD = 'iam the admin of CastanaLounge1354213542';
 const RATE_LIMIT_KEY = 'admin_rate_limit';
@@ -102,22 +103,19 @@ export default function AdminDashboard() {
     }
   }, [lockoutTime]);
 
-  const loadReservations = () => {
-    const stored = localStorage.getItem('castana_reservations');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        // Filter out expired reservations (3 hours past reservation time)
-        const now = Date.now();
-        const valid = parsed.filter((r: Reservation) => {
-          const reservationTime = new Date(`${r.date}T${r.time}`).getTime();
-          const expiryTime = reservationTime + (3 * 60 * 60 * 1000); // 3 hours
-          return now < expiryTime || !r.scanned;
-        });
-        setReservations(valid);
-      } catch (e) {
-        console.error('Error loading reservations:', e);
-      }
+  const loadReservations = async () => {
+    const { data, error } = await supabase.from('reservations').select('*');
+    if (data) {
+      // Filter out expired reservations (3 hours past reservation time)
+      const now = Date.now();
+      const valid = data.filter((r: Reservation) => {
+        const reservationTime = new Date(`${r.date}T${r.time}`).getTime();
+        const expiryTime = reservationTime + (3 * 60 * 60 * 1000); // 3 hours
+        return now < expiryTime || !r.scanned;
+      });
+      setReservations(valid);
+    } else if (error) {
+      console.error('Error loading reservations:', error);
     }
   };
 
@@ -249,7 +247,14 @@ export default function AdminDashboard() {
     return `${hours}h ${minutes}m`;
   };
 
-  const scanQRCode = (reservationId: string) => {
+  const scanQRCode = async (reservationId: string) => {
+    // Update in Supabase
+    await supabase
+      .from('reservations')
+      .update({ scanned: true, scannedAt: Date.now() })
+      .eq('id', reservationId);
+    
+    // Update local state
     const updated = reservations.map(r => {
       if (r.id === reservationId) {
         return { ...r, scanned: true, scannedAt: Date.now() };
@@ -257,13 +262,15 @@ export default function AdminDashboard() {
       return r;
     });
     setReservations(updated);
-    localStorage.setItem('castana_reservations', JSON.stringify(updated));
   };
 
-  const deleteReservation = (reservationId: string) => {
+  const deleteReservation = async (reservationId: string) => {
+    // Delete from Supabase
+    await supabase.from('reservations').delete().eq('id', reservationId);
+    
+    // Update local state
     const updated = reservations.filter(r => r.id !== reservationId);
     setReservations(updated);
-    localStorage.setItem('castana_reservations', JSON.stringify(updated));
   };
 
   const refreshData = () => {

@@ -6,6 +6,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { User, Phone, MapPin, Users, Crown, Calendar, Clock, Check, X, Loader2 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface ReservationData {
   id: string;
@@ -31,69 +32,54 @@ function ScanContent() {
 
   useEffect(() => {
     if (id) {
-      // Try to find reservation in individual storage first
-      const individualData = localStorage.getItem('castanaReservation_' + id);
-      if (individualData) {
-        setReservation(JSON.parse(individualData));
-        setLoading(false);
-        return;
-      }
-      
-      // Fallback: Check admin dashboard reservations list
-      const adminData = localStorage.getItem('castana_reservations');
-      if (adminData) {
-        try {
-          const reservations = JSON.parse(adminData);
-          const found = reservations.find((r: ReservationData) => r.id === id);
-          if (found) {
-            setReservation(found);
-            setLoading(false);
-            return;
+      // Fetch from Supabase database
+      supabase
+        .from('reservations')
+        .select('*')
+        .eq('id', id)
+        .single()
+        .then(({ data, error }) => {
+          if (data) {
+            setReservation(data);
+          } else {
+            console.error('Reservation not found:', error);
+            setNotFound(true);
           }
-        } catch (e) {
-          console.error('Error parsing admin reservations:', e);
-        }
-      }
-      
-      setNotFound(true);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, [id]);
 
   const handlePrint = () => {
     window.print();
   };
 
-  const markAsScanned = () => {
+  const markAsScanned = async () => {
     if (reservation) {
-      // Update individual reservation
       const updated = { ...reservation, scanned: true, scannedAt: Date.now() };
-      localStorage.setItem('castanaReservation_' + reservation.id, JSON.stringify(updated));
-      setReservation(updated);
       
-      // Update in admin dashboard reservations list
-      const stored = localStorage.getItem('castana_reservations');
-      if (stored) {
-        try {
-          const reservations = JSON.parse(stored);
-          const updatedList = reservations.map((r: any) => {
-            if (r.id === reservation.id) {
-              return { ...r, scanned: true, scannedAt: Date.now() };
-            }
-            return r;
-          });
-          localStorage.setItem('castana_reservations', JSON.stringify(updatedList));
-        } catch (e) {
-          console.error('Error updating admin dashboard:', e);
-        }
-      }
+      // Update in Supabase
+      await supabase
+        .from('reservations')
+        .update({ scanned: true, scannedAt: Date.now() })
+        .eq('id', reservation.id);
+      
+      setReservation(updated);
     }
   };
 
-  const updateStatus = (status: 'confirmed' | 'cancelled') => {
+  const updateStatus = async (status: 'confirmed' | 'cancelled') => {
     if (reservation) {
       const updated = { ...reservation, status };
-      localStorage.setItem('castanaReservation_' + reservation.id, JSON.stringify(updated));
+      
+      // Update in Supabase
+      await supabase
+        .from('reservations')
+        .update({ status })
+        .eq('id', reservation.id);
+      
       setReservation(updated);
     }
   };

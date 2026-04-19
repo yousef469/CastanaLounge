@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Calendar, Users, Crown, Phone, User, Clock, Download, Check } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 // Video Background: Single 5-minute looping video with more blur
 // Defined OUTSIDE the page component so it doesn't re-render on form changes
@@ -128,14 +129,8 @@ export default function ReservationPage() {
         scanned: false,
       };
 
-      // Store in admin dashboard format
-      const existing = localStorage.getItem('castana_reservations');
-      const reservations = existing ? JSON.parse(existing) : [];
-      reservations.push(reservationData);
-      localStorage.setItem('castana_reservations', JSON.stringify(reservations));
-
-      // Also store individual reservation for backward compatibility
-      localStorage.setItem('castanaReservation_' + id, JSON.stringify(reservationData));
+      // Store in Supabase database (replaces localStorage)
+      await supabase.from('reservations').insert(reservationData);
 
       // Generate QR code image URL
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}`;
