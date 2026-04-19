@@ -266,10 +266,16 @@ export default function AdminDashboard() {
 
   const scanQRCode = async (reservationId: string) => {
     // Update in Supabase
-    await supabase
+    const { error } = await supabase
       .from('reservations')
       .update({ scanned: true, scannedAt: Date.now() })
       .eq('id', reservationId);
+    
+    if (error) {
+      console.error('Error updating scanned status:', error);
+      alert('Failed to mark as checked in. Check console for details.');
+      return;
+    }
     
     // Update local state
     const updated = reservations.map(r => {

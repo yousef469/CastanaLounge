@@ -61,10 +61,16 @@ function ScanContent() {
       const updated = { ...reservation, scanned: true, scannedAt: Date.now() };
       
       // Update in Supabase
-      await supabase
+      const { error } = await supabase
         .from('reservations')
         .update({ scanned: true, scannedAt: Date.now() })
         .eq('id', reservation.id);
+      
+      if (error) {
+        console.error('Error marking as scanned:', error);
+        alert('Failed to check in. Error: ' + error.message);
+        return;
+      }
       
       setReservation(updated);
     }
