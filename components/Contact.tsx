@@ -27,8 +27,8 @@ export default function Contact() {
             {language === 'ar' ? 'تواصل معنا' : 'Get in Touch'}
           </span>
           <h2
-            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[#00d4ff] to-[#d4af37] bg-clip-text text-transparent"
-            style={{ fontFamily: language === 'ar' ? 'var(--font-cairo)' : 'var(--font-inter)' }}
+            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[#00d4ff] to-[#d4af37] bg-clip-text text-transparent leading-tight"
+            style={{ fontFamily: language === 'ar' ? 'var(--font-cairo)' : 'var(--font-inter)', lineHeight: '1.4' }}
           >
             {t('contactTitle')}
           </h2>

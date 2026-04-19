@@ -79,7 +79,7 @@ export default function About() {
           </span>
           <h2
             className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[#00d4ff] to-[#d4af37] bg-clip-text text-transparent"
-            style={{ fontFamily: language === 'ar' ? 'var(--font-cairo)' : 'var(--font-inter)' }}
+            style={{ fontFamily: language === 'ar' ? 'var(--font-cairo)' : 'var(--font-inter)', lineHeight: '1.4' }}
           >
             {t('aboutTitle')}
           </h2>

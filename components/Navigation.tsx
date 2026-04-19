@@ -102,7 +102,7 @@ export default function Navigation() {
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                       />
                     )}
-                    <span className="relative z-10 font-semibold text-base tracking-wide">{link.label}</span>
+                    <span className="relative z-10 font-semibold text-base tracking-wide leading-loose">{link.label}</span>
                   </motion.a>
                 );
               })}
