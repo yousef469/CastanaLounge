@@ -31,12 +31,31 @@ function ScanContent() {
 
   useEffect(() => {
     if (id) {
-      const data = localStorage.getItem('castanaReservation_' + id);
-      if (data) {
-        setReservation(JSON.parse(data));
-      } else {
-        setNotFound(true);
+      // Try to find reservation in individual storage first
+      const individualData = localStorage.getItem('castanaReservation_' + id);
+      if (individualData) {
+        setReservation(JSON.parse(individualData));
+        setLoading(false);
+        return;
       }
+      
+      // Fallback: Check admin dashboard reservations list
+      const adminData = localStorage.getItem('castana_reservations');
+      if (adminData) {
+        try {
+          const reservations = JSON.parse(adminData);
+          const found = reservations.find((r: ReservationData) => r.id === id);
+          if (found) {
+            setReservation(found);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing admin reservations:', e);
+        }
+      }
+      
+      setNotFound(true);
     }
     setLoading(false);
   }, [id]);
