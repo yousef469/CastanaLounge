@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Calendar, Users, Crown, Phone, User, Clock, Download, Check } from 'lucide-react';
+import { Calendar, Users, Crown, Phone, User, Clock, Download, Check, History, Trash2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
@@ -103,6 +103,50 @@ export default function ReservationPage() {
   });
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [reservationId, setReservationId] = useState('');
+  const [existingReservation, setExistingReservation] = useState<any>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [userIp, setUserIp] = useState('');
+
+  // Get user IP on mount
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => {
+        setUserIp(data.ip);
+        checkExistingReservation(data.ip);
+      })
+      .catch(() => {
+        // Fallback: use localStorage to track
+        const deviceId = localStorage.getItem('castana_device_id') || 'device-' + Date.now();
+        localStorage.setItem('castana_device_id', deviceId);
+        setUserIp(deviceId);
+        checkExistingReservation(deviceId);
+      });
+  }, []);
+
+  // Check if user already has an active reservation
+  const checkExistingReservation = async (identifier: string) => {
+    const { data } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('ipAddress', identifier)
+      .eq('scanned', false)
+      .gte('createdAt', Date.now() - (24 * 60 * 60 * 1000)) // Last 24 hours
+      .order('createdAt', { ascending: false })
+      .limit(1);
+    
+    if (data && data.length > 0) {
+      setExistingReservation(data[0]);
+    }
+  };
+
+  // Delete existing reservation
+  const deleteExistingReservation = async () => {
+    if (existingReservation) {
+      await supabase.from('reservations').delete().eq('id', existingReservation.id);
+      setExistingReservation(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,8 +173,29 @@ export default function ReservationPage() {
         scanned: false,
       };
 
-      // Store in Supabase database (replaces localStorage)
-      await supabase.from('reservations').insert(reservationData);
+      // Check for duplicate by phone
+      const { data: existingByPhone } = await supabase
+        .from('reservations')
+        .select('*')
+        .eq('phone', formData.phone)
+        .eq('scanned', false)
+        .gte('createdAt', Date.now() - (24 * 60 * 60 * 1000))
+        .limit(1);
+      
+      if (existingByPhone && existingByPhone.length > 0) {
+        alert(language === 'ar' 
+          ? 'لديك حجز نشط بالفعل بهذا الرقم. يرجى إلغاء الحجز السابق أولاً.'
+          : 'You already have an active reservation with this phone number. Please cancel the previous reservation first.');
+        setStep('form');
+        return;
+      }
+
+      // Store in Supabase database with IP tracking
+      await supabase.from('reservations').insert({
+        ...reservationData,
+        ipAddress: userIp,
+        deviceId: localStorage.getItem('castana_device_id') || userIp
+      });
 
       // Generate QR code image URL
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}`;
@@ -244,6 +309,96 @@ export default function ReservationPage() {
     <div className="min-h-screen relative flex items-center justify-center py-12 px-4">
       <VideoBackground />
       <div className="relative z-10 w-full max-w-3xl mx-auto">
+        {/* Registration History Button - Top Right */}
+        <div className="absolute top-4 right-4 z-20">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-[#d4af37] rounded-xl border border-[#d4af37]/30 transition-colors"
+          >
+            <History className="w-5 h-5" />
+            {language === 'ar' ? 'سجل الحجوزات' : 'Registration History'}
+          </button>
+        </div>
+
+        {/* Existing Reservation Warning */}
+        {existingReservation && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-amber-500/20 border border-amber-500/30 rounded-xl"
+          >
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-amber-200 font-medium mb-2">
+                  {language === 'ar' 
+                    ? `لديك حجز نشط: ${existingReservation.id}` 
+                    : `You have an active reservation: ${existingReservation.id}`}
+                </p>
+                <p className="text-amber-300/70 text-sm mb-3">
+                  {language === 'ar'
+                    ? 'يجب إلغاء الحجز السابق قبل إنشاء حجز جديد'
+                    : 'You must cancel the previous reservation before creating a new one'}
+                </p>
+                <button
+                  onClick={deleteExistingReservation}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {language === 'ar' ? 'إلغاء الحجز' : 'Cancel Reservation'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Registration History Modal */}
+        {showHistory && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowHistory(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-[#1a1f2e] rounded-2xl p-6 max-w-md w-full border border-[#d4af37]/30"
+              onClick={e => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold text-[#d4af37] mb-4">
+                {language === 'ar' ? 'سجل الحجوزات' : 'Registration History'}
+              </h3>
+              {existingReservation ? (
+                <div className="space-y-3">
+                  <div className="p-4 bg-[#0a0f1a] rounded-xl border border-[#d4af37]/20">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-[#d4af37] font-mono text-sm">{existingReservation.id}</span>
+                      <span className={`px-2 py-1 rounded text-xs ${existingReservation.scanned ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                        {existingReservation.scanned 
+                          ? (language === 'ar' ? 'تم التحقق' : 'Checked In')
+                          : (language === 'ar' ? 'معلق' : 'Pending')}
+                      </span>
+                    </div>
+                    <p className="text-white text-sm">{existingReservation.name}</p>
+                    <p className="text-gray-400 text-xs">{existingReservation.date} • {existingReservation.time}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-400 text-center py-8">
+                  {language === 'ar' ? 'لا توجد حجوزات حالية' : 'No current reservations'}
+                </p>
+              )}
+              <button
+                onClick={() => setShowHistory(false)}
+                className="w-full mt-4 py-3 bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-[#d4af37] rounded-xl transition-colors"
+              >
+                {language === 'ar' ? 'إغلاق' : 'Close'}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

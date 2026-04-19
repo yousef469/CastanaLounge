@@ -157,6 +157,18 @@ function ScanContent() {
             </div>
           )}
 
+          {reservation.scanned && (
+            <div className="mb-6 p-4 bg-amber-500/20 border border-amber-500/30 rounded-xl text-center">
+              <p className="text-amber-400 font-bold">⚠️ Already Checked In</p>
+              <p className="text-amber-400/80 text-sm">
+                This QR code was already scanned on {new Date(reservation.scannedAt || Date.now()).toLocaleString()}
+              </p>
+              <p className="text-amber-300/60 text-xs mt-2">
+                Each QR code can only be used once
+              </p>
+            </div>
+          )}
+
           {/* Details Grid */}
           <div className="grid gap-4">
             <div className="flex items-center gap-4 p-4 bg-[#0a0f1a] rounded-xl print:bg-gray-100">

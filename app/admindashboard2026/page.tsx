@@ -60,12 +60,10 @@ export default function AdminDashboard() {
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
 
-  // Check authentication status and rate limit on mount
+  // Check authentication on mount - removed sessionStorage to require login every refresh
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('admin_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
+    // Always require login on refresh for security
+    setIsAuthenticated(false);
     loadReservations();
     loadHackAttempts();
     checkRateLimit();
@@ -102,6 +100,26 @@ export default function AdminDashboard() {
       return () => clearInterval(interval);
     }
   }, [lockoutTime]);
+
+  // Real-time subscription for live updates
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    const subscription = supabase
+      .channel('reservations-channel')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'reservations' },
+        (payload) => {
+          // Refresh reservations when any change happens
+          loadReservations();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [isAuthenticated]);
 
   const loadReservations = async () => {
     const { data, error } = await supabase.from('reservations').select('*');
@@ -184,10 +202,9 @@ export default function AdminDashboard() {
     let rateLimit: RateLimit = stored ? JSON.parse(stored) : { attempts: 0, lastAttempt: 0 };
 
     if (password === ADMIN_PASSWORD) {
-      // Success
+      // Success - no sessionStorage to require login every refresh
       setIsAuthenticated(true);
       setError('');
-      sessionStorage.setItem('admin_authenticated', 'true');
       // Reset rate limit on success
       localStorage.removeItem(RATE_LIMIT_KEY);
     } else {
