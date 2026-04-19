@@ -190,6 +190,35 @@ export default function ReservationPage() {
         return;
       }
 
+      // Check table availability - table is unavailable for 3 hours after any reservation
+      const requestedDate = formData.date;
+      const requestedTime = formData.time;
+      const requestedDateTime = new Date(`${requestedDate}T${requestedTime}`).getTime();
+      const windowStart = requestedDateTime - (3 * 60 * 60 * 1000); // 3 hours before
+      const windowEnd = requestedDateTime + (3 * 60 * 60 * 1000); // 3 hours after
+      
+      const { data: tableBookings } = await supabase
+        .from('reservations')
+        .select('*')
+        .eq('tableNumber', formData.tableNumber)
+        .eq('date', requestedDate);
+      
+      if (tableBookings && tableBookings.length > 0) {
+        // Check if any existing booking overlaps with the 3-hour window
+        const hasOverlap = tableBookings.some((booking: any) => {
+          const bookingDateTime = new Date(`${booking.date}T${booking.time}`).getTime();
+          return bookingDateTime >= windowStart && bookingDateTime <= windowEnd;
+        });
+        
+        if (hasOverlap) {
+          alert(language === 'ar' 
+            ? `الطاولة ${formData.tableNumber} محجوزة بالفعل في هذا الوقت. يرجى اختيار طاولة أخرى أو وقت مختلف (يجب أن يكون الفرق 3 ساعات على الأقل).`
+            : `Table ${formData.tableNumber} is already booked at this time. Please choose another table or a different time (must be at least 3 hours apart).`);
+          setStep('form');
+          return;
+        }
+      }
+
       // Store in Supabase database with IP tracking
       await supabase.from('reservations').insert({
         ...reservationData,
