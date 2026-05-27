@@ -16,7 +16,7 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { icon: MessageCircle, href: 'https://www.instagram.com/castanalounge', label: 'Instagram' },
+    { icon: MessageCircle, href: 'https://www.instagram.com/resturant', label: 'Instagram' },
     { icon: Share2, href: 'https://www.facebook.com/CastanaLoungeKSA/', label: 'Facebook' },
   ];
 

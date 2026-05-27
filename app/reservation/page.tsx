@@ -117,8 +117,8 @@ export default function ReservationPage() {
       })
       .catch(() => {
         // Fallback: use localStorage to track
-        const deviceId = localStorage.getItem('castana_device_id') || 'device-' + Date.now();
-        localStorage.setItem('castana_device_id', deviceId);
+        const deviceId = localStorage.getItem('resturant_device_id') || 'device-' + Date.now();
+        localStorage.setItem('resturant_device_id', deviceId);
         setUserIp(deviceId);
         checkExistingReservation(deviceId);
       });
@@ -223,7 +223,7 @@ export default function ReservationPage() {
       await supabase.from('reservations').insert({
         ...reservationData,
         ipAddress: userIp,
-        deviceId: localStorage.getItem('castana_device_id') || userIp
+        deviceId: localStorage.getItem('resturant_device_id') || userIp
       });
 
       // Generate QR code image URL

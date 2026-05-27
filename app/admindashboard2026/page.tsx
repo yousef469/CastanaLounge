@@ -71,7 +71,7 @@ export default function AdminDashboard() {
   }, []);
 
   const loadAnalytics = () => {
-    const stored = localStorage.getItem('castana_analytics');
+    const stored = localStorage.getItem('resturant_analytics');
     if (stored) {
       setAnalytics(JSON.parse(stored));
     } else {
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
   };
 
   const loadHackAttempts = () => {
-    const stored = localStorage.getItem('castana_hack_attempts');
+    const stored = localStorage.getItem('resturant_hack_attempts');
     if (stored) {
       try {
         setHackAttempts(JSON.parse(stored));
@@ -183,10 +183,10 @@ export default function AdminDashboard() {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
     
-    const stored = localStorage.getItem('castana_hack_attempts');
+    const stored = localStorage.getItem('resturant_hack_attempts');
     const attempts: HackAttempt[] = stored ? JSON.parse(stored) : [];
     attempts.push(attempt);
-    localStorage.setItem('castana_hack_attempts', JSON.stringify(attempts));
+    localStorage.setItem('resturant_hack_attempts', JSON.stringify(attempts));
     setHackAttempts(attempts);
     setShowHackingAlert(true);
   };

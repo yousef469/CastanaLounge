@@ -10,8 +10,8 @@ interface AnalyticsData {
   lastUpdated: number;
 }
 
-const ANALYTICS_KEY = 'castana_analytics';
-const VISITOR_ID_KEY = 'castana_visitor_id';
+const ANALYTICS_KEY = 'resturant_analytics';
+const VISITOR_ID_KEY = 'resturant_visitor_id';
 
 function generateVisitorId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

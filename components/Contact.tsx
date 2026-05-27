@@ -115,7 +115,7 @@ export default function Contact() {
               <div className="flex justify-center items-center gap-4 mb-6">
                 {/* Instagram */}
                 <motion.a
-                  href="https://www.instagram.com/castanalounge"
+                  href="https://www.instagram.com/resturant"
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -5 }}
