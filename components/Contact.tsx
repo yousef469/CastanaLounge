@@ -114,10 +114,7 @@ export default function Contact() {
               {/* Social Icons - Centered close together */}
               <div className="flex justify-center items-center gap-4 mb-6">
                 {/* Instagram */}
-                <motion.a
-                  href="https://www.instagram.com/resturant"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <motion.div
                   whileHover={{ scale: 1.1, y: -5 }}
                   whileTap={{ scale: 0.95 }}
                   className="flex flex-col items-center gap-3 group"
@@ -128,13 +125,10 @@ export default function Contact() {
                     </svg>
                   </div>
                   <span className="font-medium text-white text-sm">Instagram</span>
-                </motion.a>
+                </motion.div>
 
                 {/* Facebook */}
-                <motion.a
-                  href="https://www.facebook.com/CastanaLoungeKSA/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <motion.div
                   whileHover={{ scale: 1.1, y: -5 }}
                   whileTap={{ scale: 0.95 }}
                   className="flex flex-col items-center gap-3 group"
@@ -145,7 +139,7 @@ export default function Contact() {
                     </svg>
                   </div>
                   <span className="font-medium text-white text-sm">Facebook</span>
-                </motion.a>
+                </motion.div>
               </div>
 
               {/* Footer Credits - Below social icons */}

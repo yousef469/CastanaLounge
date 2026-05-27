@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Coffee, MessageCircle, Share2, MapPin, Phone, ArrowUp, Heart, ExternalLink } from 'lucide-react';
+import { Coffee, MessageCircle, Share2, MapPin, Phone, ArrowUp, Heart } from 'lucide-react';
 
 export default function Footer() {
   const { t, language } = useLanguage();
@@ -113,20 +113,16 @@ export default function Footer() {
             </h4>
             <div className="space-y-3">
               {socialLinks.map((link, index) => (
-                <motion.a
+                <motion.div
                   key={index}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   whileHover={{ x: 5 }}
-                  className="flex items-center gap-3 text-gray-400 hover:text-[#00d4ff] transition-colors group"
+                  className="flex items-center gap-3 text-gray-400 transition-colors group"
                 >
-                  <div className="p-2 bg-white/5 rounded-lg group-hover:bg-[#00d4ff]/20 transition-colors">
+                  <div className="p-2 bg-white/5 rounded-lg transition-colors">
                     <link.icon className="w-5 h-5" />
                   </div>
                   <span>{link.label}</span>
-                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </motion.a>
+                </motion.div>
               ))}
             </div>
 
