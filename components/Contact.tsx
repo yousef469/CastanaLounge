@@ -178,21 +178,7 @@ export default function Contact() {
                 </h3>
               </div>
               
-              <div className="rounded-xl overflow-hidden border border-white/10">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3710.783544485239!2d39.12998757465838!3d21.55531746948641!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c3dbc52c373051%3A0x70fed5c2a26f670a!2sCastana%20lounge!5e0!3m2!1sen!2ssa!4v1776562415725!5m2!1sen!2ssa"
-                  width="100%"
-                  height="280"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
-              
-              <p className="mt-4 text-sm text-gray-400 text-center">
-                Saudia City Compound, Al Khalidiyyah, Jeddah
-              </p>
+
             </div>
           </motion.div>
         </div>
