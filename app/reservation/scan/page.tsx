@@ -292,7 +292,7 @@ function ScanContent() {
           {/* Print Footer */}
           <div className="hidden print:block mt-8 pt-4 border-t-2 border-gray-300 text-center text-sm text-gray-500">
             <p>Castana Lounge - Al Khalidiyah, Jeddah</p>
-            <p>Tel: 0533151012</p>
+            <p>Tel: 0123456789</p>
             <p>Generated: {new Date().toLocaleString()}</p>
           </div>
 

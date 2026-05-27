@@ -61,9 +61,9 @@ export default function Footer() {
             
             {/* Contact Info */}
             <div className="space-y-3">
-              <a href="tel:0533151012" className="flex items-center gap-3 text-gray-400 hover:text-[#00d4ff] transition-colors">
+              <a href="tel:0123456789" className="flex items-center gap-3 text-gray-400 hover:text-[#00d4ff] transition-colors">
                 <Phone className="w-4 h-4" />
-                <span>0533151012</span>
+                <span>0123456789</span>
               </a>
 
             </div>
