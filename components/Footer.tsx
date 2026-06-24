@@ -65,7 +65,10 @@ export default function Footer() {
                 <Phone className="w-4 h-4" />
                 <span>0533151012</span>
               </a>
-
+              <div className="flex items-center gap-3 text-gray-400">
+                <MapPin className="w-4 h-4" />
+                <span className="text-sm">Saudia City Compound, Al Khalidiyyah, Jeddah</span>
+              </div>
             </div>
           </motion.div>
 

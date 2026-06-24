@@ -145,7 +145,8 @@ export default function About() {
                   </div>
                   <h3 className="text-[#d4af37] font-bold text-xl mb-3">A Sophisticated Retreat</h3>
                   <p className="text-gray-300 leading-relaxed text-sm">
-                    Castana Lounge blends warm ambient lighting with modern industrial design. Our carefully curated interiors 
+                    In the heart of Saudia City Compound, Al Khalidiyyah, Jeddah. Castana Lounge blends 
+                    warm ambient lighting with modern industrial design. Our carefully curated interiors 
                     feature comfortable seating, soft music, and golden accent lighting that creates 
                     the perfect intimate setting.
                   </p>
@@ -156,7 +157,8 @@ export default function About() {
                   </div>
                   <h3 className="text-[#00d4ff] font-bold text-xl mb-3">Distinguished Service</h3>
                   <p className="text-gray-300 leading-relaxed text-sm">
-                    From our dedicated team to our meticulously prepared cuisine and signature beverages. Each dish is crafted with passion, from wood-fired pizzas 
+                    From our dedicated team led by Mohammed Shofan, to our meticulously prepared cuisine 
+                    and signature beverages. Each dish is crafted with passion, from wood-fired pizzas 
                     to signature mojitos. Our premium shisha features the finest quality flavors.
                   </p>
                 </div>
