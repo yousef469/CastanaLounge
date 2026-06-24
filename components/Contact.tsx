@@ -45,7 +45,7 @@ export default function Contact() {
           <div className="lg:col-span-2 grid sm:grid-cols-2 gap-6">
             {/* Phone Card */}
             <motion.a
-              href="tel:0123456789"
+              href="tel:0533151012"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -61,7 +61,7 @@ export default function Contact() {
                 <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: language === 'ar' ? 'var(--font-cairo)' : 'var(--font-inter)' }}>
                   {t('contactPhone')}
                 </h3>
-                <p className="text-2xl font-semibold text-[#d4af37] mb-2">0123456789</p>
+                <p className="text-2xl font-semibold text-[#d4af37] mb-2">0533151012</p>
                 <span className="inline-flex items-center gap-1 text-sm text-gray-400 group-hover:text-[#00d4ff] transition-colors">
                   {language === 'ar' ? 'اتصل الآن' : 'Call Now'}
                   <ExternalLink className="w-3 h-3" />
