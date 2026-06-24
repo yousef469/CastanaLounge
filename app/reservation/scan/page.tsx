@@ -302,7 +302,7 @@ function ScanContent() {
             <div className="flex justify-center items-center gap-4 mb-4">
               {/* Instagram */}
               <a
-                href="https://www.instagram.com/resturant"
+                href="https://www.instagram.com/castanalounge/?hl=en"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-2 group"
