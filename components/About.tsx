@@ -274,8 +274,8 @@ export default function About() {
                   </div>
                   <p className="text-[11px] text-gray-400">
                     {language === 'ar' 
-                      ? 'موقف مجاني واسع'
-                      : 'Free spacious parking'}
+                      ? 'موقف مجاني واسع في المجمع + شارع'
+                      : 'Free spacious parking in compound + street'}
                   </p>
                 </div>
               </div>
